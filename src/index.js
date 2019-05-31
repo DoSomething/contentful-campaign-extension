@@ -31,6 +31,62 @@ const CAMPAIGN_QUERY = gql`
   }
 `;
 
+class CampaignPreview extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  render() {
+    const id = Number(this.props.id);
+
+    if (this.state.hasError) {
+      <Note noteType="negative">Something went wrong!</Note>;
+    }
+
+    if (!id) {
+      return null;
+    }
+
+    return (
+      <Query query={CAMPAIGN_QUERY} variables={{ id }}>
+        {({ loading, error, data }) => {
+          const campaign = data.campaign;
+
+          if (loading) {
+            return <EntryCard loading={loading} />;
+          }
+
+          if (!campaign || error) {
+            return (
+              <Note noteType="warning">This isn't a valid campaign ID.</Note>
+            );
+          }
+
+          const startDate = format(parseISO(campaign.startDate), 'PP');
+          const endDate = campaign.endDate
+            ? format(parseISO(campaign.endDate), 'PP')
+            : 'forever';
+
+          return (
+            <EntryCard
+              title={campaign.internalTitle}
+              contentType={`${startDate} – ${endDate}`}
+              href={`https://activity.dosomething.org/campaign-ids/${id}`}
+              onClick={() => alert('EntityListItem onClick')}
+              size="small"
+            />
+          );
+        }}
+      </Query>
+    );
+  }
+}
+
 class App extends React.Component {
   static propTypes = {
     sdk: PropTypes.object.isRequired,
@@ -75,8 +131,6 @@ class App extends React.Component {
   };
 
   render() {
-    const id = Number(this.state.value);
-
     return (
       <ApolloProvider client={graphql}>
         <FieldGroup row={true} style={{ alignItems: 'center' }}>
@@ -95,36 +149,7 @@ class App extends React.Component {
             Find a campaign ID...
           </TextLink>
         </FieldGroup>
-        <Query query={CAMPAIGN_QUERY} variables={{ id }}>
-          {({ loading, error, data }) => {
-            const campaign = data.campaign;
-
-            if (loading) {
-              return <EntryCard isLoading={loading} />;
-            }
-
-            if (!campaign || error) {
-              return (
-                <Note noteType="warning">This isn't a valid campaign ID.</Note>
-              );
-            }
-
-            const startDate = format(parseISO(campaign.startDate), 'PP');
-            const endDate = campaign.endDate
-              ? format(parseISO(campaign.endDate), 'PP')
-              : 'forever';
-
-            return (
-              <EntryCard
-                title={campaign.internalTitle}
-                contentType={`${startDate} – ${endDate}`}
-                href={`https://activity.dosomething.org/campaign-ids/${id}`}
-                onClick={() => alert('EntityListItem onClick')}
-                size="small"
-              />
-            );
-          }}
-        </Query>
+        <CampaignPreview id={this.state.value} />
       </ApolloProvider>
     );
   }
