@@ -2,6 +2,10 @@
   "name": "contentful-campaign-extension",
   "version": "0.1.0",
   "private": true,
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
   "devDependencies": {
     "@babel/core": "7.3.4",
     "@babel/plugin-proposal-class-properties": "7.3.4",
@@ -9,8 +13,12 @@
     "@babel/preset-env": "7.3.4",
     "@babel/preset-react": "7.0.0",
     "@contentful/contentful-extension-scripts": "0.9.0",
+    "@dosomething/babel-preset": "^3.1.0",
+    "@dosomething/eslint-config": "^5.0.0",
     "contentful-cli": "0.26.5",
     "cssnano": "4.1.10",
+    "eslint": "^5.16.0",
+    "prettier": "^1.17.1"
   },
   "dependencies": {
     "@contentful/forma-36-fcss": "^0.0.18",
