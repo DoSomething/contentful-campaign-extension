@@ -135,9 +135,8 @@ class App extends React.Component {
       <ApolloProvider client={graphql}>
         <FieldGroup row={true} style={{ alignItems: 'center' }}>
           <TextInput
-            type="text"
+            type="number"
             width="large"
-            id="campaign-id"
             placeholder="Paste a campaign ID here (e.g. 9001)..."
             value={this.state.value}
             onChange={this.onChange}
