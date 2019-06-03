@@ -1,11 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import { format, parseISO } from 'date-fns';
+import dateFormat from 'dateformat';
+import gql from 'tagged-template-noop';
 import { init } from 'contentful-ui-extensions-sdk';
-import { ApolloProvider, Query } from 'react-apollo';
-import ApolloClient from 'apollo-boost';
-import { gql } from 'apollo-boost';
+import { GraphQLClient, ClientContext, useQuery } from 'graphql-hooks';
 import {
   FieldGroup,
   TextInput,
@@ -17,8 +15,8 @@ import {
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
 
-const graphql = new ApolloClient({
-  uri: 'https://graphql.dosomething.org',
+const graphql = new GraphQLClient({
+  url: 'https://graphql.dosomething.org',
 });
 
 const CAMPAIGN_QUERY = gql`
@@ -31,7 +29,7 @@ const CAMPAIGN_QUERY = gql`
   }
 `;
 
-class CampaignPreview extends React.Component {
+class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
@@ -42,56 +40,50 @@ class CampaignPreview extends React.Component {
   }
 
   render() {
-    const id = Number(this.props.id);
-
     if (this.state.hasError) {
       <Note noteType="negative">Something went wrong!</Note>;
     }
 
-    if (!id) {
-      return null;
-    }
-
-    return (
-      <Query query={CAMPAIGN_QUERY} variables={{ id }}>
-        {({ loading, error, data }) => {
-          const campaign = data.campaign;
-
-          if (loading) {
-            return <EntryCard loading={loading} />;
-          }
-
-          if (!campaign || error) {
-            return (
-              <Note noteType="warning">This isn't a valid campaign ID.</Note>
-            );
-          }
-
-          const startDate = format(parseISO(campaign.startDate), 'PP');
-          const endDate = campaign.endDate
-            ? format(parseISO(campaign.endDate), 'PP')
-            : 'forever';
-
-          return (
-            <EntryCard
-              title={campaign.internalTitle}
-              contentType={`${startDate} – ${endDate}`}
-              href={`https://activity.dosomething.org/campaign-ids/${id}`}
-              onClick={() => alert('EntityListItem onClick')}
-              size="small"
-            />
-          );
-        }}
-      </Query>
-    );
+    return this.props.children;
   }
 }
 
-class App extends React.Component {
-  static propTypes = {
-    sdk: PropTypes.object.isRequired,
-  };
+const CampaignPreview = props => {
+  const id = Number(props.id);
 
+  if (!id) {
+    return null;
+  }
+
+  const variables = { id };
+  const { loading, error, data } = useQuery(CAMPAIGN_QUERY, { variables });
+
+  if (loading) {
+    return <EntryCard loading={true} />;
+  }
+
+  if (!data || !data.campaign || error) {
+    return <Note noteType="warning">This isn't a valid campaign ID.</Note>;
+  }
+
+  const campaign = data.campaign;
+  const startDate = dateFormat(new Date(campaign.startDate), 'shortDate');
+  const endDate = campaign.endDate
+    ? dateFormat(new Date(campaign.endDate), 'shortDate')
+    : 'forever';
+
+  return (
+    <EntryCard
+      title={campaign.internalTitle}
+      contentType={`${startDate} – ${endDate}`}
+      href={`https://activity.dosomething.org/campaign-ids/${id}`}
+      onClick={() => alert('EntityListItem onClick')}
+      size="small"
+    />
+  );
+};
+
+class App extends React.Component {
   detachExternalChangeHandler = null;
 
   constructor(props) {
@@ -132,7 +124,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <ApolloProvider client={graphql}>
+      <ClientContext.Provider value={graphql}>
         <FieldGroup row={true} style={{ alignItems: 'center' }}>
           <TextInput
             type="number"
@@ -148,8 +140,10 @@ class App extends React.Component {
             Find a campaign ID...
           </TextLink>
         </FieldGroup>
-        <CampaignPreview id={this.state.value} />
-      </ApolloProvider>
+        <ErrorBoundary>
+          <CampaignPreview id={this.state.value} />
+        </ErrorBoundary>
+      </ClientContext.Provider>
     );
   }
 }

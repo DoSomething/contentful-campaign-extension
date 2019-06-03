@@ -2,6 +2,9 @@
   "presets": [
     [
       "@dosomething",
+      {
+        "withGraphQL": false
+      }
     ]
   ]
 }
