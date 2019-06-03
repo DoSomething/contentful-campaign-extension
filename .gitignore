@@ -16,7 +16,7 @@ yarn-error.log*
 node_modules/
 
 # Build
-build/*
+build
 !/build/index.html
 
 # macOS nonsense
