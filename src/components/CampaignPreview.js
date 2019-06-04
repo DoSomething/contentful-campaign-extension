@@ -43,7 +43,7 @@ const CampaignPreview = props => {
       size="small"
       title={campaign.internalTitle}
       contentType={`${startDate} – ${endDate}`}
-      href={`https://activity.dosomething.org/campaign-ids/${id}`}
+      href={`${props.rogueUrl}/campaign-ids/${id}`}
     />
   );
 };
