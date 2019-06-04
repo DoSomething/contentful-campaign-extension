@@ -44,6 +44,7 @@ const CampaignPreview = props => {
       title={campaign.internalTitle}
       contentType={`${startDate} – ${endDate}`}
       href={`${props.rogueUrl}/campaign-ids/${id}`}
+      target="_blank"
     />
   );
 };

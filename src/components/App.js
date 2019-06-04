@@ -22,7 +22,11 @@ const App = ({ sdk, rogueUrl }) => {
           value={value || ''}
           onChange={onChange}
         />
-        <TextLink icon="ChevronRight" href={`${rogueUrl}/campaign-ids`}>
+        <TextLink
+          target="_blank"
+          icon="ChevronRight"
+          href={`${rogueUrl}/campaign-ids`}
+        >
           Find a campaign ID...
         </TextLink>
       </FieldGroup>
