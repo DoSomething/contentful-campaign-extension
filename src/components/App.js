@@ -9,7 +9,7 @@ import ErrorBoundary from './ErrorBoundary';
 import CampaignPreview from './CampaignPreview';
 import useContentfulField from '../hooks/useContentfulField';
 
-const App = ({ sdk, rogueUrl }) => {
+const App = ({ sdk, northstarUrl }) => {
   const [value, onChange] = useContentfulField(sdk);
 
   return (
@@ -25,13 +25,13 @@ const App = ({ sdk, rogueUrl }) => {
         <TextLink
           target="_blank"
           icon="ChevronRight"
-          href={`${rogueUrl}/campaign-ids`}
+          href={`${northstarUrl}/admin/campaigns`}
         >
           Find a campaign ID...
         </TextLink>
       </FieldGroup>
       <ErrorBoundary>
-        <CampaignPreview id={value} rogueUrl={rogueUrl} />
+        <CampaignPreview id={value} northstarUrl={northstarUrl} />
       </ErrorBoundary>
     </>
   );
