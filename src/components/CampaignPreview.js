@@ -43,7 +43,7 @@ const CampaignPreview = props => {
       size="small"
       title={campaign.internalTitle}
       contentType={`${startDate} – ${endDate}`}
-      href={`${props.rogueUrl}/campaign-ids/${id}`}
+      href={`${props.rogueUrl}/campaigns/${id}`}
       target="_blank"
     />
   );

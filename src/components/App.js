@@ -25,7 +25,7 @@ const App = ({ sdk, rogueUrl }) => {
         <TextLink
           target="_blank"
           icon="ChevronRight"
-          href={`${rogueUrl}/campaign-ids`}
+          href={`${rogueUrl}/campaigns`}
         >
           Find a campaign ID...
         </TextLink>
